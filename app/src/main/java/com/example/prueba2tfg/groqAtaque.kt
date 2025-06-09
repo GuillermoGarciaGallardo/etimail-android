@@ -71,7 +71,7 @@ data class GroqResponse(
 )
 
 class EmailGroqLabeler(
-    private val apiKey: String = "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"
+    private val apiKey: String = "Api_key_groq_no_puede_ser_publica"
 ) {
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -157,7 +157,7 @@ class EmailGroqLabeler(
                 Log.d("EmailGroqLabeler", "Parsing JSON: $jsonString")
                 json.decodeFromString<EmailLabel>(jsonString)
             } else {
-                // If no valid JSON, create default label
+                
                 Log.w("EmailGroqLabeler", "Could not parse response as JSON: $response")
                 EmailLabel(
                     label = "Personal",
@@ -167,7 +167,7 @@ class EmailGroqLabeler(
             }
         } catch (e: Exception) {
             Log.e("EmailGroqLabeler", "Error parsing label: ${e.message}", e)
-            // Return default label in case of error
+            
             EmailLabel(
                 label = "Personal",
                 confidence = 0.5,
@@ -226,19 +226,19 @@ class EmailGroqLabeler(
         }
     }
 
-    // Method to label multiple emails
+    
     suspend fun labelMultipleEmails(emails: List<EmailData>): List<Pair<EmailData, EmailLabel?>> {
         return emails.map { email ->
             email to labelEmail(email)
         }
     }
 
-    // Method to customize available labels
+    
     fun updateAvailableLabels(newLabels: List<String>) {
         availableLabels.clear()
         availableLabels.addAll(newLabels)
     }
 
-    // Method to get current available labels
+    
     fun getAvailableLabels(): List<String> = availableLabels.toList()
 }

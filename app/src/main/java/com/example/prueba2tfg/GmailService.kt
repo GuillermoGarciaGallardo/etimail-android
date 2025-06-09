@@ -43,7 +43,7 @@ class GmailService(private val credential: GoogleAccountCredential) {
     private val labelsMutex = Mutex()
 
     // CORRECCIÓN: Mapa actualizado de etiquetas del sistema
-    // Eliminamos "importante" e "important" porque requieren manejo especial
+   
     private val systemLabels = mapOf(
         "inbox" to "INBOX",
         "enviados" to "SENT",
@@ -245,17 +245,13 @@ class GmailService(private val credential: GoogleAccountCredential) {
         return@withContext false
     }
 
-    /**
-     * NUEVA FUNCIÓN: Detecta si una etiqueta es de importancia
-     */
+    
     private fun isImportantLabel(labelName: String): Boolean {
         val importantLabels = listOf("importante", "important", "IMPORTANT")
         return importantLabels.any { it.equals(labelName, ignoreCase = true) }
     }
 
-    /**
-     * NUEVA FUNCIÓN: Aplica importancia a un email (no como etiqueta tradicional)
-     */
+    
     private suspend fun applyImportanceToEmail(emailId: String, labelName: String): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
             Log.d(TAG, "⭐ Aplicando importancia especial al correo $emailId")
@@ -303,9 +299,6 @@ class GmailService(private val credential: GoogleAccountCredential) {
         }
     }
 
-    /**
-     * NUEVA FUNCIÓN: Crea y aplica una etiqueta personalizada "Importante"
-     */
     private suspend fun applyCustomImportantLabel(emailId: String): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
             val customLabelName = "📌 Importante"
@@ -508,7 +501,7 @@ class GmailService(private val credential: GoogleAccountCredential) {
         return@withContext results
     }
 
-    // Funciones auxiliares (sin cambios)
+    
     private fun extractEmailBody(payload: com.google.api.services.gmail.model.MessagePart?): String {
         return try {
             when {

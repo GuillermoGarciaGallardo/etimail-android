@@ -62,14 +62,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Firebase Authentication
+        
         auth = FirebaseAuth.getInstance()
         Log.d(TAG, "Initial auth state: ${auth.currentUser != null}")
 
-        // Initialize Firestore
+       
         firestore = FirebaseFirestore.getInstance()
 
-        // Configure Google Sign-In with the scopes necessary for Gmail (INCLUDING MODIFY SCOPE)
+        
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // Initialize Google Account Credential for Gmail API (WITH MODIFY PERMISSIONS)
+        
         googleAccountCredential = GoogleAccountCredential.usingOAuth2(
             applicationContext,
             listOf(
@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "Firebase authentication successful")
 
-                    // Configure credentials for Gmail API
+                    
                     val googleAccount = GoogleSignIn.getLastSignedInAccount(this)
                     if (googleAccount != null) {
                         googleAccountCredential.selectedAccount = googleAccount.account
@@ -158,16 +158,16 @@ class MainActivity : ComponentActivity() {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val url = "x" // Replace with your actual n8n workflow URL
+                val url = "x" 
 
-                // Create JSON payload
+                
                 val jsonObject = JSONObject().apply {
                     put("chatInput", chatInput)
                     put("sessionId", sessionId)
                     put("action", action)
                 }
 
-                // Set up the request
+                
                 val client = OkHttpClient()
                 val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaType())
 
@@ -177,16 +177,16 @@ class MainActivity : ComponentActivity() {
                     .header("Content-Type", "application/json")
                     .build()
 
-                // Execute the request
+                
                 val response = client.newCall(request).execute()
 
-                // Parse the response
+               
                 if (response.isSuccessful) {
                     val responseData = JSONObject(response.body?.string() ?: "{}")
 
-                    // Handle the response data here
+                    
                     withContext(Dispatchers.Main) {
-                        // You can show a toast or update UI elements here
+                        
                         Toast.makeText(
                             this@MainActivity,
                             "API request successful",
@@ -228,10 +228,10 @@ fun MainAppContent(
 ) {
     val navController = rememberNavController()
 
-    // Use collectAsState for auth state to make it more reactive
+    
     val authState = remember { mutableStateOf(auth.currentUser) }
 
-    // Create Gmail service if user is authenticated
+    
     val gmailService = remember(authState.value) {
         if (authState.value != null && googleAccountCredential.selectedAccount != null) {
             GmailService(googleAccountCredential)
@@ -240,36 +240,36 @@ fun MainAppContent(
         }
     }
 
-    // Observe auth changes
+    
     DisposableEffect(key1 = true) {
         val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             Log.d("MainAppContent", "Auth state changed: ${firebaseAuth.currentUser != null}")
             authState.value = firebaseAuth.currentUser
         }
 
-        // Register listener
+        
         auth.addAuthStateListener(authStateListener)
 
-        // Remove listener when disposed
+        
         onDispose {
             auth.removeAuthStateListener(authStateListener)
         }
     }
 
-    // Set up navigation system
+    
     NavHost(
         navController = navController,
         startDestination = if (authState.value != null) "home" else "login"
     ) {
-        // Login Screen
+       
         composable("login") {
             LoginScreen(
                 onLoginClick = onSignIn,
-                isLoading = false // Add a loading state if needed
+                isLoading = false 
             )
         }
 
-        // Home Screen
+        
         composable("home") {
             HomeScreen(
                 user = authState.value,
@@ -280,7 +280,7 @@ fun MainAppContent(
         }
     }
 
-    // Handle navigation based on auth state
+    
     LaunchedEffect(authState.value) {
         val destination = if (authState.value != null) "home" else "login"
         Log.d("MainAppContent", "Auth state triggered navigation to: $destination")
